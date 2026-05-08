@@ -207,6 +207,8 @@ def process_single_mesh(file_path):
                 
                 # Descartamos choques absurdamente cerca (posibles errores de la malla).
                 dist_validas = distancias[distancias > 1e-4]
+
+
                 if len(dist_validas) > 0:
                     # De los impactos válidos, nos quedamos con el más cercano (np.min).
                     dist_in = np.min(dist_validas)
@@ -225,10 +227,14 @@ def process_single_mesh(file_path):
             
             dist_out = 0.0
             if len(loc_out) > 0:
+                # Reorganizamos los puntos de impacto en 3D
                 loc_out = np.reshape(loc_out, (-1, 3))
+                # Calculamos las distancias de todos los impactos
                 distancias = np.linalg.norm(loc_out - origen_out, axis=1)
-                
+                # Volvemos a ignorar la propia "piel" del objeto
                 dist_validas = distancias[distancias > 1e-4]
+
+                
                 if len(dist_validas) > 0:
                     dist_out = np.min(dist_validas)
                 
@@ -264,7 +270,7 @@ def process_single_mesh(file_path):
         # 4. GUARDADO DE ARCHIVOS
         # =====================================================================
         
-        # --- NORMALIZACIÓN A ESFERA UNITARIA (Solo para la IA) ---
+        # --- NORMALIZACIÓN A ESFERA UNITARIA (para la red neuronal) ---
         # Calculamos el punto más lejano al centro (radio máximo)
         max_dist = np.max(np.linalg.norm(points, axis=1))
         

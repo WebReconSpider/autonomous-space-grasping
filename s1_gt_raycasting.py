@@ -36,7 +36,6 @@ W_NORMAL = 0.3
 def process_single_mesh(file_path):
     file_name = os.path.splitext(os.path.basename(file_path))[0] # obtener un archivo de la lista
     try:
-        # =====================================================================
         # 1. CARGA Y PREPROCESADO
         # =====================================================================
 
@@ -57,13 +56,12 @@ def process_single_mesh(file_path):
         points, face_indices = trimesh.sample.sample_surface(mesh, TARGET_POINTS)
 
         # Centrado dinámico en memoria. hay que centrar los datos porque pointnet es sensible al desplazamiento. 
-            # es mejor hacer el centrado en memoria que guardarlo en un archivo y cargarlo de nuevo
+         # es mejor hacer el centrado en memoria que guardarlo en un archivo y cargarlo de nuevo
         centroide = np.mean(points, axis=0)
         points = points - centroide
 
         normals = mesh.face_normals[face_indices] # devuelve array (N_caras, 3) con el vector normal unitario de cada cara 
         
-        # =====================================================================
         # 2. CÁLCULO DE MÉTRICAS (Gravedad, Geometría, Normales)
         # =====================================================================
 
@@ -168,8 +166,7 @@ def process_single_mesh(file_path):
         base_score = (score_gravity * W_GRAVITY) + (score_geometry * W_GEOMETRY) + (score_normal * W_NORMAL)
         base_score = np.clip(base_score, 0, 1) # Normalizamos entre [0-1]
 
-        # =====================================================================
-        # 3. EL FILTRO CINEMÁTICO: RAYCASTING BIDIRECCIONAL
+        # 3. RAYCASTING BIDIRECCIONAL
         # =====================================================================
         # Épsilon es un pequeño desplazamiento hacia dentro del objeto. Esto se debe a que si 
         # lanzamos un rayo láser exactamente desde la superficie del objeto, detectará un choque 
@@ -266,7 +263,6 @@ def process_single_mesh(file_path):
         # tendrán una puntuación de 0. Los demás mantendrán su nota.
         final_score = base_score * valid_grip_mask
 
-        # =====================================================================
         # 4. GUARDADO DE ARCHIVOS
         # =====================================================================
         

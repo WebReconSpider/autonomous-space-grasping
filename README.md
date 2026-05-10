@@ -99,33 +99,33 @@ Eje X: Se calcula con el producto vectorial con los otros 2
 
 #### Ejemplo 1 (parte mecánica de una moto)
 Este es el mesh de la figura:
-![[Imagenes/pieza_motor_mesh.png]]
+![Mesh](Imagenes/pieza_motor_mesh.png)
 
 Este es el Ground Truth:
-![[Imagenes/pieza_motor_gt.png]]
+![GT](Imagenes/pieza_motor_gt.png)
 
 Esta es la inferencia de la red neuronal:
-![[Imagenes/pieza_motor_inferencia.png]]
+![Inferencia](Imagenes/pieza_motor_inferencia.png)
 
 #### Ejemplo 2 (coche)
 Este es el mesh de la figura:
-![[Imagenes/coche_mesh.png]]
+![Mesh](Imagenes/coche_mesh.png)
 
 Este es el Ground Truth:
-![[Imagenes/coche_gt.png]]
+![GT](Imagenes/coche_gt.png)
 
 Esta es la inferencia de la red neuronal:
-![[Imagenes/coche_inferencia.png]]
+![Inferencia](Imagenes/coche_inferencia.png)
 
 #### Ejemplo 3 (bote)
 Este es el mesh de la figura:
-![[Imagenes/champoo_mesh.png]]
+![Mesh](Imagenes/champoo_mesh.png)
 
 Este es el Ground Truth:
-![[Imagenes/champoor_gt.png]]
+![GT](Imagenes/champoor_gt.png)
 
 Esta es la inferencia de la red neuronal:
-![[Imagenes/champoo_inferencia.png]]
+![Inferencia](Imagenes/champoo_inferencia.png)
 
 #### Información de los cálculos
 - Tiempo en calcular los 3 Ground Truth: 627 segundos = más de 10 minutos
@@ -137,8 +137,8 @@ Esto se debe a que el cálculo del GT requiere hacer cálculos físicas y geomé
 Mientras que la inferencia neuronal es rapidísima porque PointNet ya ha aprendido los patrones y se limita a evaluar la nube de puntos mediante multiplicaciones matriciales (son paralelizadas y optimizadas en una sola pasada)
 
 ## Ejemplos de cálculo de coordenadas de agarre
-![[Imagenes/pieza_motor_agarre.png]]
+![Agarre](Imagenes/pieza_motor_agarre.png)
 
-![[Imagenes/coche_agarre.png]]
+![Agarre](Imagenes/coche_agarre.png)
 
-![[Imagenes/champoor_agarre.png]]
+![Agarre](Imagenes/champoor_agarre.png)

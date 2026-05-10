@@ -60,3 +60,85 @@ Esto permite visualizar la nube de puntos en un programa (como MeshLab) mediante
 Las zonas con valores cercanos a 1.0 (colores rojos) indicarán las superficies óptimas y viables para el robot
 
 Los valores térmicos 4D no interfieren en la predicción de la forma geométrica, sino que actúan como un filtro de post-procesado para descartar zonas geométricamente buenas pero que superen los umbrales de temperatura.
+
+## 4. Cálculo de la Pose de agarre
+
+#### 1. Filtrado
+
+Partimos de una nube de puntos que la red neuronal ya ha putuado (0-1) la calidad del agarre en esa zona
+
+Aplicamos un umbral estricto para asegurar elegir una buena zona y para reducir mucho el cálculo que hay que realizar
+
+#### 2. Clustering
+
+Una vez filtrados los puntos, se suelen quedar agrupados sobre la superficie de la pieza. Para identificar estos grupos, usamos DBSCAN (Agrupamiento Espacial Basado en Densidad con Ruido).
+
+El algoritmo busca zonas densas de puntos y descarta aquellos puntos buenos que estén aislados (ruido), asegurando que haya una superficie lo suficientemente amplia para los dedos.
+
+#### 3. Selección del Objetivo y Cálculo del Centroide
+
+Con los clústeres ya identificados, calculamos la nota media de todos los puntos que componen cada grupo. El clúster con la puntuación media más alta se considera la mejor
+
+Para darle al robot una coordenada exacta, calculamos el centro geométrico (la media de las coordenadas X, Y, Z) de este grupo ganador. Este será el punto hacia el que se dirigirá el efector final.
+
+(por implementar) Si el centroide seleccionado pertenece a una zona que excede los umbrales de temperatura operativos del manipulador, el clúster se invalida y se pasa al siguiente mejor evaluado. La temperatura no modifica la predicción geométrica, actúa como un filtro.
+
+#### 4. Generar la pose
+
+Tener un punto (X, Y, Z) no es suficiente para un brazo de 7 grados de libertad como el Kinova Gen2. El robot necesita saber con qué inclinación y giro debe aproximarse (Roll, Pitch, Yaw) para no chocar con la pieza. Para ello, construimos un sistema de referencia local:
+
+Eje Z: Calculamos la media de las normales del clúster ganador. Como queremos que la pinza "mire" hacia la pieza, invertimos este vector.
+
+Eje Y: 
+- si el producto escalar de Z y la gravedad no es paralelo: el eje y es paralelo al suelo
+- en caso contrario (agarre desde arriba) utilizamos PCA para calcular el lado "más pequeño" y ese será nuestro eje y.
+
+Eje X: Se calcula con el producto vectorial con los otros 2
+
+## Ejemplos de GT
+
+#### Ejemplo 1 (parte mecánica de una moto)
+Este es el mesh de la figura:
+![[Imagenes/pieza_motor_mesh.png]]
+
+Este es el Ground Truth:
+![[Imagenes/pieza_motor_gt.png]]
+
+Esta es la inferencia de la red neuronal:
+![[Imagenes/pieza_motor_inferencia.png]]
+
+#### Ejemplo 2 (coche)
+Este es el mesh de la figura:
+![[Imagenes/coche_mesh.png]]
+
+Este es el Ground Truth:
+![[Imagenes/coche_gt.png]]
+
+Esta es la inferencia de la red neuronal:
+![[Imagenes/coche_inferencia.png]]
+
+#### Ejemplo 3 (bote)
+Este es el mesh de la figura:
+![[Imagenes/champoo_mesh.png]]
+
+Este es el Ground Truth:
+![[Imagenes/champoor_gt.png]]
+
+Esta es la inferencia de la red neuronal:
+![[Imagenes/champoo_inferencia.png]]
+
+#### Información de los cálculos
+- Tiempo en calcular los 3 Ground Truth: 627 segundos = más de 10 minutos
+
+- Tiempo en calcular las 3 inferencias: 27 segundos
+
+Esto se debe a que el cálculo del GT requiere hacer cálculos físicas y geométricas computacionalmente pesadas, incluyendo el cálculo de PCA y el cálculo de miles de intersecciones de rayos contra la malla  
+
+Mientras que la inferencia neuronal es rapidísima porque PointNet ya ha aprendido los patrones y se limita a evaluar la nube de puntos mediante multiplicaciones matriciales (son paralelizadas y optimizadas en una sola pasada)
+
+## Ejemplos de cálculo de coordenadas de agarre
+![[Imagenes/pieza_motor_agarre.png]]
+
+![[Imagenes/coche_agarre.png]]
+
+![[Imagenes/champoor_agarre.png]]

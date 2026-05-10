@@ -10,7 +10,7 @@ import numpy as np
 
 
 """
-hacemos porque si cargamos todos los datos a la vez en la memoria RAM, colapsaría. 
+Hacemos esto porque si cargamos todos los datos a la vez en la memoria RAM, colapsaría. 
 Heredar de `Dataset` de PyTorch nos permite hacer una carga perezosa.
 Solo leemos el archivo del disco duro cuando la red neuronal lo necesita para entrenar
 En vez de cargar el dataset completo, creamos una lista con los nombres (ocupa mucho menos) y los vamos obteniendo de uno en uno
